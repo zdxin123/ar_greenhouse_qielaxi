@@ -25,13 +25,13 @@
 
 ```bat
 D:
-cd D:\ar_greenhouse
+cd <PROJECT_DIR>
 ```
 
 激活 Python 环境。注意：这台电脑不能直接用 `conda activate`，要用下面这个命令：
 
 ```bat
-C:\Users\win\miniconda3\Scripts\activate.bat ag_greenhouse
+<Miniconda>\Scripts\activate.bat ag_greenhouse
 ```
 
 激活成功后，命令行前面会出现：
@@ -67,20 +67,22 @@ ar_greenhouse/
 默认连接信息如下：
 
 ```text
-数据库类型：xxxx
-地址：xxxx
-端口：xxxx
-用户名：xxxx
-密码：xxxx
-数据库名：xxxx
+数据库类型：MySQL
+地址：<数据库地址，例如 <DB_HOST>>
+端口：<数据库端口，例如 <DB_PORT>>
+用户名：<数据库用户名>
+密码：<数据库密码>
+数据库名：<数据库名称>
 ```
+
+说明：请不要把真实数据库账号、密码、公网地址写进 README 或上传到 GitHub。真实连接信息在本机运行时通过命令参数填写，或在本地配置文件中维护。
 
 需要用到的表：
 
 ```text
 data       当前传感器数据表，预测时使用
-history  历史传感器数据表，整理训练集时使用
-camera   摄像头编号和大棚名称对应表，预测筛选图片时使用
+tbhistory  历史传感器数据表，整理训练集时使用
+tbcamera   摄像头编号和大棚名称对应表，预测筛选图片时使用
 ```
 
 如果 MySQL 命令不可用，先确认电脑里是否能在命令行执行：
@@ -104,22 +106,25 @@ images/3/
 images/4/
 images/5/
 images/6/
+images/7/
+images/8/
 ```
 
+其中 `8` 文件夹对应“7西”。
 
 预测图片放在 `predict_need_data` 文件夹内，不需要手动分类。脚本会自动根据图片名筛选对应大棚的最新图片。
 
 预测图片支持两类命名：
 
 ```text
-1-1_20250726_140004.jpg
-5-2_20250726_140004.jpg
+1-1_<YYYYMMDD>_<HHMMSS>.jpg
+5-2_<YYYYMMDD>_<HHMMSS>.jpg
 ```
 
 或者使用数据库 `tbcamera` 表里的 `cameraId` 命名，例如：
 
 ```text
-03ft817417723926531QbFI_xxx1753410625559xxx.jpg
+<CAMERA_ID>_xxx<TIMESTAMP>xxx.jpg
 ```
 
 
@@ -141,11 +146,11 @@ python prepare_data_from_mysql.py
 默认日期如下：
 
 ```text
-1号棚：2025-06-10 种植，2025-10-10 成熟
-2号棚：2025-06-10 种植，2025-10-10 成熟
-3号棚：2025-05-01 种植，2025-08-10 成熟
-4号棚：2025-05-01 种植，2025-08-14 成熟
-5号棚：2025-03-12 种植，2025-08-01 成熟
+1号棚：<DATE> 种植，<DATE> 成熟
+2号棚：<DATE> 种植，<DATE> 成熟
+3号棚：<DATE> 种植，<DATE> 成熟
+4号棚：<DATE> 种植，<DATE> 成熟
+5号棚：<DATE> 种植，<DATE> 成熟
 ```
 
 运行成功后会生成：
@@ -164,7 +169,7 @@ final_train_data_ready.csv
 如果后续要改某个棚的种植日期和成熟日期，可以这样写：
 
 ```bat
-python prepare_data_from_mysql.py --plant-dates 1=2025-06-10,2=2025-06-10,3=2025-05-01,4=2025-05-01,5=2025-03-12 --harvest-dates 1=2025-10-10,2=2025-10-10,3=2025-08-10,4=2025-08-14,5=2025-08-01
+python prepare_data_from_mysql.py --plant-dates 1=<DATE>,2=<DATE>,3=<DATE>,4=<DATE>,5=<DATE> --harvest-dates 1=<DATE>,2=<DATE>,3=<DATE>,4=<DATE>,5=<DATE>
 ```
 
 如果要整理更多棚，比如 1-8 号棚：
@@ -232,13 +237,13 @@ python train_script.py --time-limit 7200
 给人看的终端演示版：
 
 ```bat
-python predict_demo.py --shed 1 --crop 西红柿 --plant-date 2025-06-10
+python predict_demo.py --shed 1 --crop 西红柿 --plant-date <DATE>
 ```
 
 给看板/API 调用的 JSON 版：
 
 ```bat
-python predict.py --shed 1 --crop 西红柿 --plant-date 2025-06-10 --json
+python predict.py --shed 1 --crop 西红柿 --plant-date <DATE> --json
 ```
 
 看板版成功时会输出类似：
@@ -250,7 +255,7 @@ python predict.py --shed 1 --crop 西红柿 --plant-date 2025-06-10 --json
     "shed": "1",
     "crop": "西红柿",
     "predicted_days_remaining": 76.98,
-    "predicted_maturity_date": "2025-10-10"
+    "predicted_maturity_date": "<DATE>"
   }
 }
 ```
@@ -295,7 +300,7 @@ python predict.py --shed 1 --crop 西红柿 --plant-date 2025-06-10 --json
 解决：
 
 ```bat
-C:\Users\win\miniconda3\Scripts\activate.bat ag_greenhouse
+<Miniconda>\Scripts\activate.bat ag_greenhouse
 ```
 
 问题 2：训练几分钟没动。
@@ -344,12 +349,12 @@ C:\Users\win\miniconda3\Scripts\activate.bat ag_greenhouse
 
 ```bat
 D:
-cd D:\青海_greenhouse\ar_greenhouse
-C:\Users\win\miniconda3\Scripts\activate.bat ag_greenhouse
+cd <PROJECT_DIR>
+<Miniconda>\Scripts\activate.bat ag_greenhouse
 python prepare_data_from_mysql.py
 python train_script.py --max-epochs 100
-python predict_demo.py --shed 1 --crop 西红柿 --plant-date 2025-06-10
-python predict.py --shed 1 --crop 西红柿 --plant-date 2025-06-10 --json
+python predict_demo.py --shed 1 --crop 西红柿 --plant-date <DATE>
+python predict.py --shed 1 --crop 西红柿 --plant-date <DATE> --json
 ```
 
 到这里如果都能跑通，就说明数据整理、训练、预测、看板接口都正常。
