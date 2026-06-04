@@ -25,7 +25,7 @@
 
 ```bat
 D:
-cd D:\青海_greenhouse\ar_greenhouse
+cd D:\ar_greenhouse
 ```
 
 激活 Python 环境。注意：这台电脑不能直接用 `conda activate`，要用下面这个命令：
@@ -79,8 +79,8 @@ ar_greenhouse/
 
 ```text
 data       当前传感器数据表，预测时使用
-tbhistory  历史传感器数据表，整理训练集时使用
-tbcamera   摄像头编号和大棚名称对应表，预测筛选图片时使用
+history  历史传感器数据表，整理训练集时使用
+camera   摄像头编号和大棚名称对应表，预测筛选图片时使用
 ```
 
 如果 MySQL 命令不可用，先确认电脑里是否能在命令行执行：
@@ -104,11 +104,8 @@ images/3/
 images/4/
 images/5/
 images/6/
-images/7/
-images/8/
 ```
 
-其中 `8` 文件夹对应“7西”。
 
 预测图片放在 `predict_need_data` 文件夹内，不需要手动分类。脚本会自动根据图片名筛选对应大棚的最新图片。
 
